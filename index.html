@@ -263,6 +263,21 @@
         reader.readAsText(file);
     });
 
+    // Add the functionality to reset the page after download
+    document.getElementById("downloadBtn").addEventListener("click", function () {
+        // Simulate downloading
+        console.log("Downloading the processed file...");
+        
+        // Reset form and hide download button after a delay (2 seconds)
+        setTimeout(function() {
+            document.getElementById("fileInput").value = ''; // Reset the file input
+            document.getElementById("fileName").textContent = "No file selected"; // Reset file name display
+            document.getElementById("downloadBtn").style.display = "none"; // Hide download button
+            document.getElementById("processBtn").disabled = true; // Disable process button
+            document.getElementById("status").textContent = ""; // Clear status text
+        }, 2000);  // 2 seconds delay
+    });
+  
     document.getElementById("themeSelect").addEventListener("change", function () {
         document.body.classList = "theme-" + this.value;
     });
