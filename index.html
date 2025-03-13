@@ -77,52 +77,20 @@
         transform: translateY(0);
       }
     }
-
-    /* Styled file upload button */
+    
     .file-upload {
-      display: flex;
-      align-items: center;
-      gap: 10px;
       margin-bottom: 20px;
-    }
-    
-    .file-upload input {
-      display: none;
-    }
-    
-    .file-upload label {
-      background-color: var(--download-button-bg);
-      color: white;
-      border: none;
-      padding: 10px 20px;
-      border-radius: 4px;
-      cursor: pointer;
-      font-size: 16px;
-      transition: background-color 0.3s ease;
-      display: inline-block;
-    }
-    
-    .file-upload label:hover {
-      background-color: var(--download-button-hover-bg);
-    }
-    
-    #fileName {
-      font-size: 14px;
-      color: var(--text-color);
-    }
-    
-    #processBtn, #downloadBtn {
-      padding: 10px 20px;
-      border-radius: 4px;
-      cursor: pointer;
-      font-size: 16px;
-      color: white;
-      border: none;
-      transition: background-color 0.3s ease;
     }
     
     #processBtn {
       background-color: var(--button-bg);
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 16px;
+      transition: background-color 0.3s ease;
     }
     
     #processBtn:hover {
@@ -136,8 +104,15 @@
     
     #downloadBtn {
       background-color: var(--download-button-bg);
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 16px;
       display: none;
       text-decoration: none;
+      transition: background-color 0.3s ease;
     }
     
     #downloadBtn:hover {
@@ -163,7 +138,7 @@
       margin-top: 10px;
       font-style: italic;
     }
-
+    
     /* Theme Picker Styling */
     .theme-picker {
       margin-top: 30px;
@@ -191,8 +166,7 @@
   
   <div class="container">
     <div class="file-upload">
-      <label for="fileInput">Choose File</label>
-      <span id="fileName">No file selected</span>
+      <p>Upload a transcript text file:</p>
       <input type="file" id="fileInput" accept=".txt" />
     </div>
     
@@ -218,22 +192,115 @@
   </div>
   
   <script>
-    // Update file name when a file is selected
-    document.getElementById("fileInput").addEventListener("change", function () {
-      const fileNameSpan = document.getElementById("fileName");
-      if (this.files.length > 0) {
-        fileNameSpan.textContent = this.files[0].name;
-        document.getElementById("processBtn").disabled = false;
-      } else {
-        fileNameSpan.textContent = "No file selected";
-        document.getElementById("processBtn").disabled = true;
+    // Transcript processing function
+    function process_transcript(transcript_text) {
+      const lines = transcript_text.trim().split('\n');
+      const processed_transcript = [];
+      let current_speaker = null;
+      let current_text = "";
+      
+      let i = 0;
+      while (i < lines.length) {
+        const line = lines[i];
+        
+        // Check if this is a line with speaker information
+        // Format: number "Speaker Name" (numbers)
+        if (line.includes('"') && line.includes('(') && line.includes(')') && !isNaN(line[0])) {
+          // Extract speaker name
+          const speaker_name = line.split('"')[1];
+          
+          // If changing speakers, add previous content
+          if (current_speaker && current_speaker !== speaker_name && current_text) {
+            processed_transcript.push(`${current_speaker}: ${current_text.trim()}`);
+            current_text = "";
+          }
+          
+          current_speaker = speaker_name;
+          i += 1;
+          
+          // Skip timestamp line
+          if (i < lines.length && lines[i].includes("-->")) {
+            i += 1;
+          }
+          
+          // Get content line
+          if (i < lines.length) {
+            current_text += " " + lines[i];
+          }
+        } else {
+          // Continuation of content
+          current_text += " " + line;
+        }
+        
+        i += 1;
       }
-    });
+      
+      // Add the last speaker's content
+      if (current_speaker && current_text) {
+        processed_transcript.push(`${current_speaker}: ${current_text.trim()}`);
+      }
+      
+      return processed_transcript.join('\n\n');
+    }
 
+    // DOM elements
+    const fileInput = document.getElementById('fileInput');
+    const processBtn = document.getElementById('processBtn');
+    const downloadBtn = document.getElementById('downloadBtn');
+    const statusElement = document.getElementById('status');
+    const outputText = document.getElementById('outputText');
+    
+    // Enable process button when a file is selected
+    fileInput.addEventListener('change', () => {
+      processBtn.disabled = !fileInput.files.length;
+      downloadBtn.style.display = 'none';
+      outputText.value = '';
+      statusElement.textContent = '';
+    });
+    
+    // Process the file when the button is clicked
+    processBtn.addEventListener('click', () => {
+      const file = fileInput.files[0];
+      if (!file) return;
+      
+      statusElement.textContent = 'Processing...';
+      
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        try {
+          const content = e.target.result;
+          const processed = process_transcript(content);
+          
+          // Show the processed text in the preview
+          outputText.value = processed;
+          
+          // Create a download link
+          const blob = new Blob([processed], { type: 'text/plain' });
+          const url = URL.createObjectURL(blob);
+          downloadBtn.href = url;
+          downloadBtn.style.display = 'inline-block';
+          
+          statusElement.textContent = 'Transcript processed successfully!';
+        } catch (error) {
+          statusElement.textContent = `Error processing transcript: ${error.message}`;
+        }
+      };
+      
+      reader.onerror = () => {
+        statusElement.textContent = 'Error reading the file.';
+      };
+      
+      reader.readAsText(file);
+    });
+    
     // Theme Picker Functionality
-    document.getElementById("themeSelect").addEventListener("change", function () {
-      document.body.classList.remove("theme-light", "theme-dark", "theme-vibrant");
-      document.body.classList.add("theme-" + this.value);
+    const themeSelect = document.getElementById('themeSelect');
+    themeSelect.addEventListener('change', function () {
+      const theme = this.value;
+      // Remove existing theme classes from body
+      document.body.classList.remove('theme-light', 'theme-dark', 'theme-vibrant');
+      // Add the selected theme class to body
+      document.body.classList.add('theme-' + theme);
     });
   </script>
 </body>
