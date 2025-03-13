@@ -226,6 +226,17 @@
             font-size: 1.5rem;
         }
 
+        .file-name {
+            margin-top: 12px;
+            font-weight: 500;
+            color: var(--primary);
+            display: block;
+        }
+        .upload-area.file-selected {
+            border-color: var(--primary);
+            background-color: rgba(99, 102, 241, 0.05);
+        }
+
         /* Dark mode */
         .dark-mode {
             --primary: #818cf8;
@@ -277,7 +288,7 @@
         .pulse {
             animation: pulse 2s infinite;
         }
-    </style>
+    </>
 </head>
 <body>
     <button id="darkModeToggle" class="dark-mode-toggle">
@@ -295,7 +306,7 @@
                 <i class="fas fa-cloud-upload-alt upload-icon"></i>
                 <h3>Drop your transcript file here</h3>
                 <p>or</p>
-                <input type="file" id="fileInput" accept=".txt" style="display: none;">
+                <input type="file" id="fileInput" accept=".txt" ="display: none;">
                 <button class="btn btn-primary" onclick="document.getElementById('fileInput').click()">
                     <i class="fas fa-file-alt"></i> Browse Files
                 </button>
@@ -451,7 +462,6 @@
                 handleFiles(files);
             }
         }
-        
         function handleFiles(files) {
             if (files.length) {
                 const file = files[0];
@@ -461,11 +471,11 @@
                 }
                 
                 fileName.textContent = file.name;
+                dropArea.classList.add('file-selected'); // Add a class to show file is selected
                 processBtn.disabled = false;
                 resetUI();
             }
-        }
-        
+        }      
         // Enable process button only when file is selected
         fileInput.addEventListener('change', () => {
             processBtn.disabled = !fileInput.files.length;
