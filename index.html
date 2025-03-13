@@ -288,7 +288,7 @@
         .pulse {
             animation: pulse 2s infinite;
         }
-    </>
+    </style>
 </head>
 <body>
     <button id="darkModeToggle" class="dark-mode-toggle">
@@ -465,18 +465,30 @@
         function handleFiles(files) {
             if (files.length) {
                 const file = files[0];
-                if (file.type !== 'text/plain' && !file.name.endsWith('.txt')) {
+                
+                // Ensure it's a .txt file
+                if (!file.name.toLowerCase().endsWith('.txt')) {
                     showStatus('Please upload a .txt file', 'error');
                     return;
                 }
-                
-                fileName.textContent = file.name;
-                dropArea.classList.add('file-selected'); // Add a class to show file is selected
+        
+                // Display the file name
+                const fileName = document.getElementById('fileName');
+                if (fileName) fileName.textContent = file.name;
+        
+                // Add a class to indicate file selection
+                dropArea.classList.add('file-selected');
+        
+                // Enable the process button
                 processBtn.disabled = false;
-                resetUI();
+        
+                // Remove previous output and status messages
+                statusElement.textContent = '';
+                outputText.value = '';
+                downloadBtn.style.display = 'none';
             }
-        }      
-        // Enable process button only when file is selected
+        }
+ process button only when file is selected
         fileInput.addEventListener('change', () => {
             processBtn.disabled = !fileInput.files.length;
             downloadBtn.style.display = 'none';
