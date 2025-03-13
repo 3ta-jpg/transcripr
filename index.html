@@ -18,7 +18,7 @@
     
     /* Dark theme */
     .theme-dark {
-      --bg-color: #E8F5FF; /* Light Sky Blue */
+      --bg-color: #ccdce8; /* Light Sky Blue */
       --text-color: #333333; /* Dark Gray */
       --container-bg: #FFFFFF; /* White for clean containers */
       --button-bg: #4A90E2; /* Bright Blue */
@@ -29,7 +29,7 @@
     
     /* Vibrant theme */
     .theme-vibrant {
-      --bg-color: #F5F5F0; /* Off-White */
+      --bg-color: #e3e3cf; /* Off-White */
       --text-color: #4A342A; /* Dark Brown */
       --container-bg: #FAF9F6; /* Slightly lighter off-white container */
       --button-bg: #D38669; /* Burnt Orange */
@@ -53,6 +53,13 @@
       text-align: center;
       margin-bottom: 20px;
       transition: color 0.3s ease;
+    }
+    
+    .logo {
+      max-width: 200px; /* Adjust the size as needed */
+      height: auto;
+      display: block;
+      margin: 0 auto; /* Center the logo */
     }
     
     .container {
@@ -158,7 +165,9 @@
   </style>
 </head>
 <body class="theme-light">
-  <h1>Transcript Converter</h1>
+<div class="logo-container">
+  <img src="logo.jpg" alt="Transcript Converter Logo" class="logo">
+</div>
   
   <div class="container">
     <div class="file-upload">
