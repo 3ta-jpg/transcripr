@@ -7,38 +7,38 @@
   <style>
     /* Default (Light) theme variables */
     :root {
-      --bg-color: #f0f2f5;
-      --text-color: #333;
-      --container-bg: #ffffff;
-      --button-bg: #4285f4;
-      --button-hover-bg: #3367d6;
-      --download-button-bg: #0f9d58;
-      --download-button-hover-bg: #0b8043;
-      --accent-color: #4285f4;
+      --bg-color: #e0f2f7; 
+      --text-color: #1e3a8a; 
+      --container-bg: #a5d8ef;
+      --button-bg: #60a5fa; 
+      --button-hover-bg: #3b82f6; 
+      --download-button-bg: #0369a1; 
+      --download-button-hover-bg: #025687; 
+      --accent-color: #f0f9ff; 
     }
     
     /* Dark theme */
     .theme-dark {
-      --bg-color: #121212;
-      --text-color: #e0e0e0;
-      --container-bg: #1e1e1e;
-      --button-bg: #bb86fc;
-      --button-hover-bg: #985eff;
-      --download-button-bg: #03dac6;
-      --download-button-hover-bg: #018786;
-      --accent-color: #bb86fc;
+      --bg-color: #1a1e27; 
+      --text-color: #d1d5db; 
+      --container-bg: #282c34;
+      --button-bg: #6772e5; 
+      --button-hover-bg: #5a63cc; 
+      --download-button-bg: #50a14f; 
+      --download-button-hover-bg: #40803f;
+      --accent-color: #82aaff; 
     }
     
     /* Vibrant theme */
     .theme-vibrant {
-      --bg-color: #ffe5ec;
-      --text-color: #333;
-      --container-bg: #fff0f5;
-      --button-bg: #ff4081;
-      --button-hover-bg: #e91e63;
-      --download-button-bg: #69f0ae;
-      --download-button-hover-bg: #00e676;
-      --accent-color: #ff4081;
+      --bg-color: #f8f8ff; 
+      --text-color: #333333; 
+      --container-bg: #f0f8ff; 
+      --button-bg: #a8dadc; 
+      --button-hover-bg: #7ac5cd; 
+      --download-button-bg: #ccebc5; 
+      --download-button-hover-bg: #a8d8a3; 
+      --accent-color: #e1bee7; 
     }
     
     body {
@@ -77,9 +77,37 @@
         transform: translateY(0);
       }
     }
-    
+
     .file-upload {
+      display: flex;
+      align-items: center;
+      gap: 10px;
       margin-bottom: 20px;
+    }
+    
+    .file-upload input {
+      display: none;
+    }
+    
+    .file-upload label {
+      background-color: var(--download-button-bg);
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 16px;
+      transition: background-color 0.3s ease;
+      display: inline-block;
+    }
+    
+    .file-upload label:hover {
+      background-color: var(--download-button-hover-bg);
+    }
+    
+    #fileName {
+      font-size: 14px;
+      color: var(--text-color);
     }
     
     #processBtn {
