@@ -304,6 +304,10 @@ document.getElementById("downloadBtn").addEventListener("click", function () {
         document.getElementById("status").textContent = ""; // Clear status text
     }, 2000);  // 2 seconds delay
 });
+  
+  document.getElementById("themeSelect").addEventListener("change", function () {
+      document.body.classList = "theme-" + this.value;
+ });
 </script>
 </body>
 </html>
