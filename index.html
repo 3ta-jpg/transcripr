@@ -7,38 +7,38 @@
   <style>
     /* Default (Light) theme variables */
     :root {
-      --bg-color: #e0f2f7; 
-      --text-color: #1e3a8a; 
-      --container-bg: #a5d8ef;
-      --button-bg: #60a5fa; 
-      --button-hover-bg: #3b82f6; 
-      --download-button-bg: #0369a1; 
-      --download-button-hover-bg: #025687; 
-      --accent-color: #f0f9ff; 
+      --bg-color: #e0f2f7; /* Very light, almost white, like the foam of the wave */
+      --text-color: #1e3a8a; /* Deep, dark blue, like the depths of the wave */
+      --container-bg: #a5d8ef; /* Medium, stormy blue, for container depth */
+      --button-bg: #60a5fa; /* Vibrant, lighter blue, like the crest of the wave */
+      --button-hover-bg: #3b82f6; /* Darker, more intense blue on hover */
+      --download-button-bg: #0369a1; /* Deep, ocean blue, for download emphasis */
+      --download-button-hover-bg: #025687; /* Darker ocean blue on hover */
+      --accent-color: #f0f9ff; /* Very light, almost white, for highlights and accents */
     }
     
     /* Dark theme */
     .theme-dark {
-      --bg-color: #1a1e27; 
-      --text-color: #d1d5db; 
-      --container-bg: #282c34;
-      --button-bg: #6772e5; 
-      --button-hover-bg: #5a63cc; 
-      --download-button-bg: #50a14f; 
-      --download-button-hover-bg: #40803f;
-      --accent-color: #82aaff; 
+      --bg-color: #1a1e27; /* Slightly deeper, night sky blue-ish base */
+      --text-color: #d1d5db; /* Soft, warm grey for readability */
+      --container-bg: #282c34; /* Darker, but with subtle depth */
+      --button-bg: #6772e5; /* A more subdued, deep indigo */
+      --button-hover-bg: #5a63cc; /* Slightly lighter indigo on hover */
+      --download-button-bg: #50a14f; /* A muted, teal-leaning green */
+      --download-button-hover-bg: #40803f; /* Darker green on hover */
+      --accent-color: #82aaff; /* A soft, starlight blue for accents */
     }
     
     /* Vibrant theme */
     .theme-vibrant {
-      --bg-color: #f8f8ff; 
-      --text-color: #333333; 
-      --container-bg: #f0f8ff; 
-      --button-bg: #a8dadc; 
-      --button-hover-bg: #7ac5cd; 
-      --download-button-bg: #ccebc5; 
-      --download-button-hover-bg: #a8d8a3; 
-      --accent-color: #e1bee7; 
+      --bg-color: #e7c1e8;
+      --text-color: #333333; /* Dark gray for strong contrast and readability */
+      --container-bg: #f0f8ff; /* A slightly tinted, light blue for soft layering */
+      --button-bg: #a8dadc; /* Soft, water lily blue-green */
+      --button-hover-bg: #7ac5cd; /* Slightly darker shade for hover effect */
+      --download-button-bg: #ccebc5; /* Light, spring green, like lily pads */
+      --download-button-hover-bg: #a8d8a3; /* Darker green on hover */
+      --accent-color: #e1bee7; /* Soft, lavender-purple, like the water lily flowers */
     }
     
     body {
@@ -78,6 +78,7 @@
       }
     }
 
+    /* Styled file upload button */
     .file-upload {
       display: flex;
       align-items: center;
@@ -110,15 +111,18 @@
       color: var(--text-color);
     }
     
-    #processBtn {
-      background-color: var(--button-bg);
-      color: white;
-      border: none;
+    #processBtn, #downloadBtn {
       padding: 10px 20px;
       border-radius: 4px;
       cursor: pointer;
       font-size: 16px;
+      color: white;
+      border: none;
       transition: background-color 0.3s ease;
+    }
+    
+    #processBtn {
+      background-color: var(--button-bg);
     }
     
     #processBtn:hover {
@@ -132,15 +136,8 @@
     
     #downloadBtn {
       background-color: var(--download-button-bg);
-      color: white;
-      border: none;
-      padding: 10px 20px;
-      border-radius: 4px;
-      cursor: pointer;
-      font-size: 16px;
       display: none;
       text-decoration: none;
-      transition: background-color 0.3s ease;
     }
     
     #downloadBtn:hover {
@@ -166,7 +163,7 @@
       margin-top: 10px;
       font-style: italic;
     }
-    
+
     /* Theme Picker Styling */
     .theme-picker {
       margin-top: 30px;
@@ -194,7 +191,8 @@
   
   <div class="container">
     <div class="file-upload">
-      <p>Upload a transcript text file:</p>
+      <label for="fileInput">Choose File</label>
+      <span id="fileName">No file selected</span>
       <input type="file" id="fileInput" accept=".txt" />
     </div>
     
@@ -220,115 +218,22 @@
   </div>
   
   <script>
-    // Transcript processing function
-    function process_transcript(transcript_text) {
-      const lines = transcript_text.trim().split('\n');
-      const processed_transcript = [];
-      let current_speaker = null;
-      let current_text = "";
-      
-      let i = 0;
-      while (i < lines.length) {
-        const line = lines[i];
-        
-        // Check if this is a line with speaker information
-        // Format: number "Speaker Name" (numbers)
-        if (line.includes('"') && line.includes('(') && line.includes(')') && !isNaN(line[0])) {
-          // Extract speaker name
-          const speaker_name = line.split('"')[1];
-          
-          // If changing speakers, add previous content
-          if (current_speaker && current_speaker !== speaker_name && current_text) {
-            processed_transcript.push(`${current_speaker}: ${current_text.trim()}`);
-            current_text = "";
-          }
-          
-          current_speaker = speaker_name;
-          i += 1;
-          
-          // Skip timestamp line
-          if (i < lines.length && lines[i].includes("-->")) {
-            i += 1;
-          }
-          
-          // Get content line
-          if (i < lines.length) {
-            current_text += " " + lines[i];
-          }
-        } else {
-          // Continuation of content
-          current_text += " " + line;
-        }
-        
-        i += 1;
+    // Update file name when a file is selected
+    document.getElementById("fileInput").addEventListener("change", function () {
+      const fileNameSpan = document.getElementById("fileName");
+      if (this.files.length > 0) {
+        fileNameSpan.textContent = this.files[0].name;
+        document.getElementById("processBtn").disabled = false;
+      } else {
+        fileNameSpan.textContent = "No file selected";
+        document.getElementById("processBtn").disabled = true;
       }
-      
-      // Add the last speaker's content
-      if (current_speaker && current_text) {
-        processed_transcript.push(`${current_speaker}: ${current_text.trim()}`);
-      }
-      
-      return processed_transcript.join('\n\n');
-    }
+    });
 
-    // DOM elements
-    const fileInput = document.getElementById('fileInput');
-    const processBtn = document.getElementById('processBtn');
-    const downloadBtn = document.getElementById('downloadBtn');
-    const statusElement = document.getElementById('status');
-    const outputText = document.getElementById('outputText');
-    
-    // Enable process button when a file is selected
-    fileInput.addEventListener('change', () => {
-      processBtn.disabled = !fileInput.files.length;
-      downloadBtn.style.display = 'none';
-      outputText.value = '';
-      statusElement.textContent = '';
-    });
-    
-    // Process the file when the button is clicked
-    processBtn.addEventListener('click', () => {
-      const file = fileInput.files[0];
-      if (!file) return;
-      
-      statusElement.textContent = 'Processing...';
-      
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        try {
-          const content = e.target.result;
-          const processed = process_transcript(content);
-          
-          // Show the processed text in the preview
-          outputText.value = processed;
-          
-          // Create a download link
-          const blob = new Blob([processed], { type: 'text/plain' });
-          const url = URL.createObjectURL(blob);
-          downloadBtn.href = url;
-          downloadBtn.style.display = 'inline-block';
-          
-          statusElement.textContent = 'Transcript processed successfully!';
-        } catch (error) {
-          statusElement.textContent = `Error processing transcript: ${error.message}`;
-        }
-      };
-      
-      reader.onerror = () => {
-        statusElement.textContent = 'Error reading the file.';
-      };
-      
-      reader.readAsText(file);
-    });
-    
     // Theme Picker Functionality
-    const themeSelect = document.getElementById('themeSelect');
-    themeSelect.addEventListener('change', function () {
-      const theme = this.value;
-      // Remove existing theme classes from body
-      document.body.classList.remove('theme-light', 'theme-dark', 'theme-vibrant');
-      // Add the selected theme class to body
-      document.body.classList.add('theme-' + theme);
+    document.getElementById("themeSelect").addEventListener("change", function () {
+      document.body.classList.remove("theme-light", "theme-dark", "theme-vibrant");
+      document.body.classList.add("theme-" + this.value);
     });
   </script>
 </body>
