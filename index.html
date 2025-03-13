@@ -3,39 +3,39 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Transcript Converter</title>
+  <title>TranscriptR</title>
   <style>
     /* Default (Light) theme variables */
     :root {
-      --bg-color: #f0f2f5;
-      --text-color: #333;
-      --container-bg: #ffffff;
-      --button-bg: #4285f4;
-      --button-hover-bg: #3367d6;
-      --download-button-bg: #0f9d58;
-      --download-button-hover-bg: #0b8043;
+      --bg-color: #37474F; /* Dark Slate Gray */
+      --text-color: #B0BEC5; /* Light Blue Gray */
+      --container-bg: #4A6572; /* Slightly lighter Slate Gray for containers */
+      --button-bg: #607D8B; /* Blue Gray */
+      --button-hover-bg: #4F6A78; /* Slightly darker Blue Gray */
+      --download-button-bg: #81C784; /* Light Green (Accent) */
+      --download-button-hover-bg: #6BB06E; /* Slightly darker Green */
     }
     
     /* Dark theme */
     .theme-dark {
-      --bg-color: #121212;
-      --text-color: #e0e0e0;
-      --container-bg: #1e1e1e;
-      --button-bg: #bb86fc;
-      --button-hover-bg: #985eff;
-      --download-button-bg: #03dac6;
-      --download-button-hover-bg: #018786;
+      --bg-color: #E8F5FF; /* Light Sky Blue */
+      --text-color: #333333; /* Dark Gray */
+      --container-bg: #FFFFFF; /* White for clean containers */
+      --button-bg: #4A90E2; /* Bright Blue */
+      --button-hover-bg: #357BCE; /* Slightly darker Blue */
+      --download-button-bg: #26A69A; /* Teal (Accent) */
+      --download-button-hover-bg: #1F8A7F; /* Slightly darker Teal */
     }
     
     /* Vibrant theme */
     .theme-vibrant {
-      --bg-color: #ffe5ec;
-      --text-color: #333;
-      --container-bg: #fff0f5;
-      --button-bg: #ff4081;
-      --button-hover-bg: #e91e63;
-      --download-button-bg: #69f0ae;
-      --download-button-hover-bg: #00e676;
+      --bg-color: #F5F5F0; /* Off-White */
+      --text-color: #4A342A; /* Dark Brown */
+      --container-bg: #FAF9F6; /* Slightly lighter off-white container */
+      --button-bg: #D38669; /* Burnt Orange */
+      --button-hover-bg: #B86F52; /* Slightly darker Orange */
+      --download-button-bg: #E9C46A; /* Golden Yellow (Accent) */
+      --download-button-hover-bg: #D1AD58; /* Slightly darker Yellow */
     }
     
     body {
@@ -95,8 +95,8 @@
     }
     
     #processBtn, #downloadBtn {
-      width: 100%;
-      padding: 10px;
+      width: 85%;
+      padding: 8px;
       border-radius: 4px;
       cursor: pointer;
       font-size: 16px;
@@ -176,9 +176,9 @@
   <div class="theme-picker">
     <label for="themeSelect">Choose Theme:</label>
     <select id="themeSelect">
-      <option value="light">Light</option>
-      <option value="dark">Dark</option>
-      <option value="vibrant">Vibrant</option>
+      <option value="light">Forest</option>
+      <option value="dark">Costal Horizon</option>
+      <option value="vibrant">Earthen</option>
     </select>
   </div>
   
