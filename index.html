@@ -291,7 +291,7 @@
     </style>
 </head>
 <body>
-    <button id="darkModeToggle" class="dark-mode-toggle">
+    <button id="darkMode" class="dark-mode-toggle">
         <i class="fas fa-moon"></i>
     </button>
 
@@ -488,7 +488,7 @@
                 downloadBtn.style.display = 'none';
             }
         }
- process button only when file is selected
+                // process button only when file is selected
         fileInput.addEventListener('change', () => {
             processBtn.disabled = !fileInput.files.length;
             downloadBtn.style.display = 'none';
