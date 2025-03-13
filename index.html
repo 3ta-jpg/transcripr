@@ -192,6 +192,7 @@
   </div>
   
 <script>
+    let originalFilename = "";
     function process_transcript(transcript_text) {
         const lines = transcript_text.trim().split('\n');
         const processed_transcript = [];
@@ -234,53 +235,75 @@
         return processed_transcript.join('\n\n');
     }
 
-    document.getElementById("fileInput").addEventListener("change", function () {
-        document.getElementById("fileName").textContent = this.files[0] ? this.files[0].name : "No file selected";
-        document.getElementById("processBtn").disabled = !this.files.length;
-    });
+document.getElementById("fileInput").addEventListener("change", function () {
+    const file = this.files[0];
+    if (file) {
+        originalFilename = file.name;
+        document.getElementById("fileName").textContent = originalFilename;
+        document.getElementById("processBtn").disabled = false;
+    } else {
+        originalFilename = "";
+        document.getElementById("fileName").textContent = "No file selected";
+        document.getElementById("processBtn").disabled = true;
+    }
+});
 
-    document.getElementById("processBtn").addEventListener("click", function () {
-        const file = document.getElementById("fileInput").files[0];
-        if (!file) return;
+document.getElementById("processBtn").addEventListener("click", function () {
+    const file = document.getElementById("fileInput").files[0];
+    if (!file) return;
 
-        const reader = new FileReader();
-        reader.onload = (e) => {
-            const processed = process_transcript(e.target.result);
-            
-            // **Fixed: Create a proper Blob URL**
-            const blob = new Blob([processed], { type: "text/plain" });
-            const url = URL.createObjectURL(blob);
-            
-            // **Fix: Set correct `download` attribute**
-            const downloadBtn = document.getElementById("downloadBtn");
-            downloadBtn.href = url;
-            downloadBtn.download = "processed_transcript.txt"; // ✅ Correct filename
-            downloadBtn.style.display = "block"; // ✅ Show download button
-            
-            document.getElementById("status").textContent = "Transcript processed successfully!";
-        };
-
-        reader.readAsText(file);
-    });
-
-    // Add the functionality to reset the page after download
-    document.getElementById("downloadBtn").addEventListener("click", function () {
-        // Simulate downloading
-        console.log("Downloading the processed file...");
+    const reader = new FileReader();
+    reader.onload = (e) => {
+        const processed = process_transcript(e.target.result);
         
-        // Reset form and hide download button after a delay (2 seconds)
-        setTimeout(function() {
-            document.getElementById("fileInput").value = ''; // Reset the file input
-            document.getElementById("fileName").textContent = "No file selected"; // Reset file name display
-            document.getElementById("downloadBtn").style.display = "none"; // Hide download button
-            document.getElementById("processBtn").disabled = true; // Disable process button
-            document.getElementById("status").textContent = ""; // Clear status text
-        }, 2000);  // 2 seconds delay
-    });
-  
-    document.getElementById("themeSelect").addEventListener("change", function () {
-        document.body.classList = "theme-" + this.value;
-    });
+        // Create a proper Blob URL
+        const blob = new Blob([processed], { type: "text/plain" });
+        const url = URL.createObjectURL(blob);
+        
+        // Create new filename with (Cleaned) appended before the extension
+        let newFilename = "";
+        if (originalFilename) {
+            const lastDotIndex = originalFilename.lastIndexOf('.');
+            if (lastDotIndex !== -1) {
+                // If there is a file extension
+                const nameWithoutExt = originalFilename.substring(0, lastDotIndex);
+                const extension = originalFilename.substring(lastDotIndex);
+                newFilename = `${nameWithoutExt} (Cleaned)${extension}`;
+            } else {
+                // If there is no file extension
+                newFilename = `${originalFilename} (Cleaned)`;
+            }
+        } else {
+            newFilename = "processed_transcript.txt";
+        }
+        
+        // Set the download button properties
+        const downloadBtn = document.getElementById("downloadBtn");
+        downloadBtn.href = url;
+        downloadBtn.download = newFilename;
+        downloadBtn.style.display = "block";
+        
+        document.getElementById("status").textContent = "Transcript processed successfully!";
+    };
+
+    reader.readAsText(file);
+});
+
+// Keep the reset functionality
+document.getElementById("downloadBtn").addEventListener("click", function () {
+    // Simulate downloading
+    console.log("Downloading the processed file...");
+    
+    // Reset form and hide download button after a delay (2 seconds)
+    setTimeout(function() {
+        document.getElementById("fileInput").value = ''; // Reset the file input
+        document.getElementById("fileName").textContent = "No file selected"; // Reset file name display
+        originalFilename = ""; // Reset the stored original filename
+        document.getElementById("downloadBtn").style.display = "none"; // Hide download button
+        document.getElementById("processBtn").disabled = true; // Disable process button
+        document.getElementById("status").textContent = ""; // Clear status text
+    }, 2000);  // 2 seconds delay
+});
 </script>
 </body>
 </html>
