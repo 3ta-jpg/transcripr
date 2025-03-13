@@ -7,44 +7,41 @@
   <style>
     /* Default (Light) theme variables */
     :root {
-      --bg-color: #e0f2f7; /* Very light, almost white, like the foam of the wave */
-      --text-color: #1e3a8a; /* Deep, dark blue, like the depths of the wave */
-      --container-bg: #a5d8ef; /* Medium, stormy blue, for container depth */
-      --button-bg: #60a5fa; /* Vibrant, lighter blue, like the crest of the wave */
-      --button-hover-bg: #3b82f6; /* Darker, more intense blue on hover */
-      --download-button-bg: #0369a1; /* Deep, ocean blue, for download emphasis */
-      --download-button-hover-bg: #025687; /* Darker ocean blue on hover */
-      --accent-color: #f0f9ff; /* Very light, almost white, for highlights and accents */
+      --bg-color: #1A1A1A;
+      --text-color: #E0E0E0;
+      --container-bg: #D18CE0;
+      --button-bg: #8856A7;
+      --button-hover-bg: #3367d6;
+      --download-button-bg: #5C3A66;
+      --download-button-hover-bg: #0b8043;
     }
     
     /* Dark theme */
     .theme-dark {
-      --bg-color: #1a1e27; /* Slightly deeper, night sky blue-ish base */
-      --text-color: #d1d5db; /* Soft, warm grey for readability */
-      --container-bg: #282c34; /* Darker, but with subtle depth */
-      --button-bg: #6772e5; /* A more subdued, deep indigo */
-      --button-hover-bg: #5a63cc; /* Slightly lighter indigo on hover */
-      --download-button-bg: #50a14f; /* A muted, teal-leaning green */
-      --download-button-hover-bg: #40803f; /* Darker green on hover */
-      --accent-color: #82aaff; /* A soft, starlight blue for accents */
+      --bg-color: #121212;
+      --text-color: #e0e0e0;
+      --container-bg: #1e1e1e;
+      --button-bg: #bb86fc;
+      --button-hover-bg: #985eff;
+      --download-button-bg: #03dac6;
+      --download-button-hover-bg: #018786;
     }
     
     /* Vibrant theme */
     .theme-vibrant {
-      --bg-color: #e7c1e8;
-      --text-color: #333333; /* Dark gray for strong contrast and readability */
-      --container-bg: #f0f8ff; /* A slightly tinted, light blue for soft layering */
-      --button-bg: #a8dadc; /* Soft, water lily blue-green */
-      --button-hover-bg: #7ac5cd; /* Slightly darker shade for hover effect */
-      --download-button-bg: #ccebc5; /* Light, spring green, like lily pads */
-      --download-button-hover-bg: #a8d8a3; /* Darker green on hover */
-      --accent-color: #e1bee7; /* Soft, lavender-purple, like the water lily flowers */
+      --bg-color: #ffe5ec;
+      --text-color: #333;
+      --container-bg: #fff0f5;
+      --button-bg: #ff4081;
+      --button-hover-bg: #e91e63;
+      --download-button-bg: #69f0ae;
+      --download-button-hover-bg: #00e676;
     }
     
     body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+      font-family: "Segoe UI", Roboto, sans-serif;
       line-height: 1.6;
-      max-width: 800px;
+      max-width: 600px;
       margin: 0 auto;
       padding: 20px;
       background-color: var(--bg-color);
@@ -54,7 +51,7 @@
     
     h1 {
       text-align: center;
-      margin-bottom: 30px;
+      margin-bottom: 20px;
       transition: color 0.3s ease;
     }
     
@@ -63,34 +60,58 @@
       border-radius: 8px;
       padding: 20px;
       box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-      transition: background-color 0.3s ease, transform 0.3s ease;
-      animation: fadeIn 0.5s ease-in-out;
+      transition: background-color 0.3s ease;
     }
-    
-    @keyframes fadeIn {
-      from {
-        opacity: 0;
-        transform: translateY(10px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
-    
+
+    /* Styled file upload button */
     .file-upload {
+      display: flex;
+      align-items: center;
+      gap: 10px;
       margin-bottom: 20px;
     }
     
-    #processBtn {
-      background-color: var(--button-bg);
+    .file-upload input {
+      display: none;
+    }
+    
+    .file-upload label {
+      background-color: var(--download-button-bg);
       color: white;
-      border: none;
       padding: 10px 20px;
       border-radius: 4px;
       cursor: pointer;
       font-size: 16px;
       transition: background-color 0.3s ease;
+      display: inline-block;
+    }
+    
+    .file-upload label:hover {
+      background-color: var(--download-button-hover-bg);
+    }
+    
+    #fileName {
+      font-size: 14px;
+      color: var(--text-color);
+    }
+    
+    #processBtn, #downloadBtn {
+      width: 100%;
+      padding: 10px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 16px;
+      color: white;
+      border: none;
+      transition: background-color 0.3s ease;
+      display: block;
+      text-align: center;
+      text-decoration: none;
+    }
+    
+    #processBtn {
+      background-color: var(--button-bg);
+      margin-bottom: 10px;
     }
     
     #processBtn:hover {
@@ -104,44 +125,22 @@
     
     #downloadBtn {
       background-color: var(--download-button-bg);
-      color: white;
-      border: none;
-      padding: 10px 20px;
-      border-radius: 4px;
-      cursor: pointer;
-      font-size: 16px;
       display: none;
-      text-decoration: none;
-      transition: background-color 0.3s ease;
     }
     
     #downloadBtn:hover {
       background-color: var(--download-button-hover-bg);
     }
     
-    textarea {
-      width: 100%;
-      height: 200px;
-      padding: 10px;
-      border: 1px solid #ddd;
-      border-radius: 4px;
-      resize: vertical;
-      font-family: monospace;
-      transition: background-color 0.3s ease;
-    }
-    
-    .output-area {
-      margin-top: 20px;
-    }
-    
     .status {
       margin-top: 10px;
       font-style: italic;
+      text-align: center;
     }
-    
+
     /* Theme Picker Styling */
     .theme-picker {
-      margin-top: 30px;
+      margin-top: 20px;
       text-align: center;
     }
     
@@ -153,7 +152,6 @@
     .theme-picker select {
       padding: 5px 10px;
       border-radius: 4px;
-      border: 1px solid #ccc;
       font-size: 14px;
       background-color: var(--container-bg);
       color: var(--text-color);
@@ -166,7 +164,8 @@
   
   <div class="container">
     <div class="file-upload">
-      <p>Upload a transcript text file:</p>
+      <label for="fileInput">Choose File</label>
+      <span id="fileName">No file selected</span>
       <input type="file" id="fileInput" accept=".txt" />
     </div>
     
@@ -174,7 +173,8 @@
     <a id="downloadBtn" href="#" download="processed_transcript.txt">Download Processed Transcript</a>
     
     <div class="status" id="status"></div>
-    
+  </div>
+  
   <!-- Theme Picker -->
   <div class="theme-picker">
     <label for="themeSelect">Choose Theme:</label>
@@ -186,115 +186,31 @@
   </div>
   
   <script>
-    // Transcript processing function
-    function process_transcript(transcript_text) {
-      const lines = transcript_text.trim().split('\n');
-      const processed_transcript = [];
-      let current_speaker = null;
-      let current_text = "";
-      
-      let i = 0;
-      while (i < lines.length) {
-        const line = lines[i];
-        
-        // Check if this is a line with speaker information
-        // Format: number "Speaker Name" (numbers)
-        if (line.includes('"') && line.includes('(') && line.includes(')') && !isNaN(line[0])) {
-          // Extract speaker name
-          const speaker_name = line.split('"')[1];
-          
-          // If changing speakers, add previous content
-          if (current_speaker && current_speaker !== speaker_name && current_text) {
-            processed_transcript.push(`${current_speaker}: ${current_text.trim()}`);
-            current_text = "";
-          }
-          
-          current_speaker = speaker_name;
-          i += 1;
-          
-          // Skip timestamp line
-          if (i < lines.length && lines[i].includes("-->")) {
-            i += 1;
-          }
-          
-          // Get content line
-          if (i < lines.length) {
-            current_text += " " + lines[i];
-          }
-        } else {
-          // Continuation of content
-          current_text += " " + line;
-        }
-        
-        i += 1;
+    // Update file name when a file is selected
+    document.getElementById("fileInput").addEventListener("change", function () {
+      const fileNameSpan = document.getElementById("fileName");
+      if (this.files.length > 0) {
+        fileNameSpan.textContent = this.files[0].name;
+        document.getElementById("processBtn").disabled = false;
+      } else {
+        fileNameSpan.textContent = "No file selected";
+        document.getElementById("processBtn").disabled = true;
       }
-      
-      // Add the last speaker's content
-      if (current_speaker && current_text) {
-        processed_transcript.push(`${current_speaker}: ${current_text.trim()}`);
-      }
-      
-      return processed_transcript.join('\n\n');
-    }
+    });
 
-    // DOM elements
-    const fileInput = document.getElementById('fileInput');
-    const processBtn = document.getElementById('processBtn');
-    const downloadBtn = document.getElementById('downloadBtn');
-    const statusElement = document.getElementById('status');
-    const outputText = document.getElementById('outputText');
-    
-    // Enable process button when a file is selected
-    fileInput.addEventListener('change', () => {
-      processBtn.disabled = !fileInput.files.length;
-      downloadBtn.style.display = 'none';
-      outputText.value = '';
-      statusElement.textContent = '';
+    // Mock processing function
+    document.getElementById("processBtn").addEventListener("click", function () {
+      document.getElementById("status").textContent = "Processing...";
+      setTimeout(() => {
+        document.getElementById("status").textContent = "Transcript processed successfully!";
+        document.getElementById("downloadBtn").style.display = "block";
+      }, 1500);
     });
-    
-    // Process the file when the button is clicked
-    processBtn.addEventListener('click', () => {
-      const file = fileInput.files[0];
-      if (!file) return;
-      
-      statusElement.textContent = 'Processing...';
-      
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        try {
-          const content = e.target.result;
-          const processed = process_transcript(content);
-          
-          // Show the processed text in the preview
-          outputText.value = processed;
-          
-          // Create a download link
-          const blob = new Blob([processed], { type: 'text/plain' });
-          const url = URL.createObjectURL(blob);
-          downloadBtn.href = url;
-          downloadBtn.style.display = 'inline-block';
-          
-          statusElement.textContent = 'Transcript processed successfully!';
-        } catch (error) {
-          statusElement.textContent = `Error processing transcript: ${error.message}`;
-        }
-      };
-      
-      reader.onerror = () => {
-        statusElement.textContent = 'Error reading the file.';
-      };
-      
-      reader.readAsText(file);
-    });
-    
+
     // Theme Picker Functionality
-    const themeSelect = document.getElementById('themeSelect');
-    themeSelect.addEventListener('change', function () {
-      const theme = this.value;
-      // Remove existing theme classes from body
-      document.body.classList.remove('theme-light', 'theme-dark', 'theme-vibrant');
-      // Add the selected theme class to body
-      document.body.classList.add('theme-' + theme);
+    document.getElementById("themeSelect").addEventListener("change", function () {
+      document.body.classList.remove("theme-light", "theme-dark", "theme-vibrant");
+      document.body.classList.add("theme-" + this.value);
     });
   </script>
 </body>
