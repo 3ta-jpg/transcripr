@@ -7,35 +7,35 @@
   <style>
     /* Default (Light) theme variables */
     :root {
-      --bg-color: #1A1A1A;
-      --text-color: #E0E0E0;
-      --container-bg: #D18CE0;
-      --button-bg: #8856A7;
-      --button-hover-bg: #3367d6;
-      --download-button-bg: #5C3A66;
-      --download-button-hover-bg: #0b8043;
+      --bg-color: #1A1A1A; /* Dark Charcoal */
+      --text-color: #E0E0E0; /* Light Gray */
+      --container-bg: #282828; /* Slightly lighter dark for containers */
+      --button-bg: #8856A7; /* Dark Lavender */
+      --button-hover-bg: #5C3A66; /* Deep Purple */
+      --download-button-bg: #D18CE0; /* Light Orchid (Accent) */
+      --download-button-hover-bg: #B16CC0; /* Slightly darker Orchid */
     }
     
     /* Dark theme */
     .theme-dark {
-      --bg-color: #121212;
-      --text-color: #e0e0e0;
-      --container-bg: #1e1e1e;
-      --button-bg: #bb86fc;
-      --button-hover-bg: #985eff;
-      --download-button-bg: #03dac6;
-      --download-button-hover-bg: #018786;
+      --bg-color: #37474F; /* Dark Slate Gray */
+      --text-color: #B0BEC5; /* Light Blue Gray */
+      --container-bg: #4A6572; /* Slightly lighter Slate Gray for containers */
+      --button-bg: #607D8B; /* Blue Gray */
+      --button-hover-bg: #4F6A78; /* Slightly darker Blue Gray */
+      --download-button-bg: #81C784; /* Light Green (Accent) */
+      --download-button-hover-bg: #6BB06E; /* Slightly darker Green */
     }
     
     /* Vibrant theme */
     .theme-vibrant {
-      --bg-color: #ffe5ec;
-      --text-color: #333;
-      --container-bg: #fff0f5;
-      --button-bg: #ff4081;
-      --button-hover-bg: #e91e63;
-      --download-button-bg: #69f0ae;
-      --download-button-hover-bg: #00e676;
+      --bg-color: #E8F5FF; /* Light Sky Blue */
+      --text-color: #333333; /* Dark Gray */
+      --container-bg: #FFFFFF; /* White for clean containers */
+      --button-bg: #4A90E2; /* Bright Blue */
+      --button-hover-bg: #357BCE; /* Slightly darker Blue */
+      --download-button-bg: #26A69A; /* Teal (Accent) */
+      --download-button-hover-bg: #1F8A7F; /* Slightly darker Teal */
     }
     
     body {
@@ -63,7 +63,6 @@
       transition: background-color 0.3s ease;
     }
 
-    /* Styled file upload button */
     .file-upload {
       display: flex;
       align-items: center;
@@ -138,7 +137,6 @@
       text-align: center;
     }
 
-    /* Theme Picker Styling */
     .theme-picker {
       margin-top: 20px;
       text-align: center;
@@ -175,7 +173,6 @@
     <div class="status" id="status"></div>
   </div>
   
-  <!-- Theme Picker -->
   <div class="theme-picker">
     <label for="themeSelect">Choose Theme:</label>
     <select id="themeSelect">
@@ -186,31 +183,71 @@
   </div>
   
   <script>
-    // Update file name when a file is selected
-    document.getElementById("fileInput").addEventListener("change", function () {
-      const fileNameSpan = document.getElementById("fileName");
-      if (this.files.length > 0) {
-        fileNameSpan.textContent = this.files[0].name;
-        document.getElementById("processBtn").disabled = false;
-      } else {
-        fileNameSpan.textContent = "No file selected";
-        document.getElementById("processBtn").disabled = true;
+    function process_transcript(transcript_text) {
+      const lines = transcript_text.trim().split('\n');
+      const processed_transcript = [];
+      let current_speaker = null;
+      let current_text = "";
+      
+      let i = 0;
+      while (i < lines.length) {
+        const line = lines[i];
+        
+        if (line.includes('"') && line.includes('(') && line.includes(')') && !isNaN(line[0])) {
+          const speaker_name = line.split('"')[1];
+          
+          if (current_speaker && current_speaker !== speaker_name && current_text) {
+            processed_transcript.push(`${current_speaker}: ${current_text.trim()}`);
+            current_text = "";
+          }
+          
+          current_speaker = speaker_name;
+          i += 1;
+          
+          if (i < lines.length && lines[i].includes("-->")) {
+            i += 1;
+          }
+          
+          if (i < lines.length) {
+            current_text += " " + lines[i];
+          }
+        } else {
+          current_text += " " + line;
+        }
+        
+        i += 1;
       }
+      
+      if (current_speaker && current_text) {
+        processed_transcript.push(`${current_speaker}: ${current_text.trim()}`);
+      }
+      
+      return processed_transcript.join('\n\n');
+    }
+
+    document.getElementById("fileInput").addEventListener("change", function () {
+      document.getElementById("fileName").textContent = this.files[0] ? this.files[0].name : "No file selected";
+      document.getElementById("processBtn").disabled = !this.files.length;
     });
 
-    // Mock processing function
     document.getElementById("processBtn").addEventListener("click", function () {
-      document.getElementById("status").textContent = "Processing...";
-      setTimeout(() => {
-        document.getElementById("status").textContent = "Transcript processed successfully!";
+      const file = document.getElementById("fileInput").files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const processed = process_transcript(e.target.result);
+        const blob = new Blob([processed], { type: "text/plain" });
+        document.getElementById("downloadBtn").href = URL.createObjectURL(blob);
         document.getElementById("downloadBtn").style.display = "block";
-      }, 1500);
+        document.getElementById("status").textContent = "Transcript processed successfully!";
+      };
+
+      reader.readAsText(file);
     });
 
-    // Theme Picker Functionality
     document.getElementById("themeSelect").addEventListener("change", function () {
-      document.body.classList.remove("theme-light", "theme-dark", "theme-vibrant");
-      document.body.classList.add("theme-" + this.value);
+      document.body.classList = "theme-" + this.value;
     });
   </script>
 </body>
