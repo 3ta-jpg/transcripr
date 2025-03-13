@@ -4,93 +4,333 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Transcript Converter</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --success: #10b981;
+            --success-dark: #059669;
+            --background: #f9fafb;
+            --card-bg: #ffffff;
+            --text: #1f2937;
+            --text-light: #6b7280;
+            --border: #e5e7eb;
+        }
+
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
             line-height: 1.6;
-            max-width: 800px;
+            margin: 0;
+            padding: 0;
+            background-color: var(--background);
+            color: var(--text);
+            min-height: 100vh;
+        }
+
+        .app-container {
+            max-width: 900px;
             margin: 0 auto;
-            padding: 20px;
-            color: #333;
+            padding: 40px 20px;
         }
-        h1 {
+
+        header {
             text-align: center;
-            margin-bottom: 30px;
+            margin-bottom: 40px;
         }
-        .container {
-            background-color: #f9f9f9;
-            border-radius: 8px;
-            padding: 20px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+
+        h1 {
+            font-size: 2.5rem;
+            margin: 0;
+            background: linear-gradient(135deg, var(--primary), #8b5cf6);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
         }
-        .file-upload {
+
+        .tagline {
+            color: var(--text-light);
+            font-size: 1.1rem;
+            margin-top: 8px;
+        }
+
+        .card {
+            background-color: var(--card-bg);
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            padding: 30px;
             margin-bottom: 20px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
-        #processBtn {
-            background-color: #4285f4;
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 4px;
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+        }
+
+        .upload-area {
+            border: 2px dashed var(--border);
+            border-radius: 8px;
+            padding: 40px 20px;
+            text-align: center;
+            margin-bottom: 20px;
             cursor: pointer;
-            font-size: 16px;
+            transition: all 0.3s ease;
         }
-        #processBtn:hover {
-            background-color: #3367d6;
+
+        .upload-area:hover, .upload-area.dragover {
+            border-color: var(--primary);
+            background-color: rgba(99, 102, 241, 0.05);
         }
-        #processBtn:disabled {
-            background-color: #cccccc;
+
+        .upload-icon {
+            font-size: 48px;
+            color: var(--primary);
+            margin-bottom: 16px;
+        }
+
+        .file-name {
+            margin-top: 12px;
+            font-weight: 500;
+        }
+
+        .buttons {
+            display: flex;
+            gap: 12px;
+            margin: 24px 0;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-weight: 500;
+            cursor: pointer;
+            border: none;
+            font-size: 1rem;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: all 0.2s ease;
+        }
+
+        .btn-primary {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--primary-dark);
+        }
+
+        .btn-primary:disabled {
+            background-color: #a5a6f6;
             cursor: not-allowed;
         }
-        #downloadBtn {
-            background-color: #0f9d58;
+
+        .btn-success {
+            background-color: var(--success);
             color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 16px;
+            text-decoration: none;
             display: none;
         }
-        #downloadBtn:hover {
-            background-color: #0b8043;
+
+        .btn-success:hover {
+            background-color: var(--success-dark);
         }
+
+        .progress-container {
+            height: 4px;
+            width: 100%;
+            background-color: var(--border);
+            border-radius: 4px;
+            margin: 20px 0;
+            overflow: hidden;
+            display: none;
+        }
+
+        .progress-bar {
+            height: 100%;
+            width: 0;
+            background: linear-gradient(90deg, var(--primary), #8b5cf6);
+            transition: width 0.3s ease;
+        }
+
+        .status {
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .status.success {
+            background-color: rgba(16, 185, 129, 0.1);
+            color: #065f46;
+            border-left: 4px solid var(--success);
+            display: block;
+        }
+
+        .status.error {
+            background-color: rgba(239, 68, 68, 0.1);
+            color: #b91c1c;
+            border-left: 4px solid #ef4444;
+            display: block;
+        }
+
         textarea {
             width: 100%;
-            height: 200px;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
+            height: 300px;
+            padding: 16px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
             resize: vertical;
             font-family: monospace;
+            font-size: 14px;
+            line-height: 1.5;
+            color: var(--text);
+            background-color: #f9fafb;
         }
+
         .output-area {
-            margin-top: 20px;
+            display: none;
         }
-        .status {
-            margin-top: 10px;
-            font-style: italic;
+
+        .output-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .output-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--text);
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 40px;
+            color: var(--text-light);
+            font-size: 0.9rem;
+        }
+
+        .dark-mode-toggle {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: none;
+            border: none;
+            color: var(--text);
+            cursor: pointer;
+            font-size: 1.5rem;
+        }
+
+        /* Dark mode */
+        .dark-mode {
+            --primary: #818cf8;
+            --primary-dark: #6366f1;
+            --success: #34d399;
+            --success-dark: #10b981;
+            --background: #111827;
+            --card-bg: #1f2937;
+            --text: #f9fafb;
+            --text-light: #d1d5db;
+            --border: #374151;
+        }
+
+        .dark-mode textarea {
+            background-color: #374151;
+            color: var(--text);
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .app-container {
+                padding: 20px 16px;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .card {
+                padding: 20px;
+            }
+            
+            .buttons {
+                flex-direction: column;
+            }
+            
+            .btn {
+                width: 100%;
+            }
+        }
+
+        /* Animation */
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.6; }
+            100% { opacity: 1; }
+        }
+
+        .pulse {
+            animation: pulse 2s infinite;
         }
     </style>
 </head>
 <body>
-    <h1>Transcript Converter</h1>
-    
-    <div class="container">
-        <div class="file-upload">
-            <p>Upload a transcript text file:</p>
-            <input type="file" id="fileInput" accept=".txt">
+    <button id="darkModeToggle" class="dark-mode-toggle">
+        <i class="fas fa-moon"></i>
+    </button>
+
+    <div class="app-container">
+        <header>
+            <h1>Transcript Converter</h1>
+            <p class="tagline">Transform your transcript files with just a click</p>
+        </header>
+        
+        <div class="card">
+            <div id="dropArea" class="upload-area">
+                <i class="fas fa-cloud-upload-alt upload-icon"></i>
+                <h3>Drop your transcript file here</h3>
+                <p>or</p>
+                <input type="file" id="fileInput" accept=".txt" style="display: none;">
+                <button class="btn btn-primary" onclick="document.getElementById('fileInput').click()">
+                    <i class="fas fa-file-alt"></i> Browse Files
+                </button>
+                <p class="file-name" id="fileName"></p>
+            </div>
+            
+            <div class="progress-container" id="progressContainer">
+                <div class="progress-bar" id="progressBar"></div>
+            </div>
+            
+            <div class="buttons">
+                <button id="processBtn" class="btn btn-primary" disabled>
+                    <i class="fas fa-cogs"></i> Process Transcript
+                </button>
+                <a id="downloadBtn" class="btn btn-success" href="#" download="processed_transcript.txt">
+                    <i class="fas fa-download"></i> Download Result
+                </a>
+            </div>
+            
+            <div id="status" class="status"></div>
         </div>
         
-        <button id="processBtn" disabled>Process Transcript</button>
-        <a id="downloadBtn" href="#" download="processed_transcript.txt">Download Processed Transcript</a>
-        
-        <div class="status" id="status"></div>
-        
-        <div class="output-area">
-            <p>Preview:</p>
+        <div class="card output-area" id="outputArea">
+            <div class="output-header">
+                <span class="output-title">Preview Result</span>
+                <button id="copyBtn" class="btn btn-primary">
+                    <i class="fas fa-copy"></i> Copy
+                </button>
+            </div>
             <textarea id="outputText" readonly></textarea>
         </div>
+        
+        <footer>
+            <p>Transcript Converter | Processing happens in your browser - no data is stored or sent to any server</p>
+        </footer>
     </div>
 
     <script>
@@ -152,6 +392,79 @@
         const downloadBtn = document.getElementById('downloadBtn');
         const statusElement = document.getElementById('status');
         const outputText = document.getElementById('outputText');
+                
+        // Dark mode toggle
+        darkModeToggle.addEventListener('click', () => {
+            document.body.classList.toggle('dark-mode');
+            const icon = darkModeToggle.querySelector('i');
+            if (document.body.classList.contains('dark-mode')) {
+                icon.classList.remove('fa-moon');
+                icon.classList.add('fa-sun');
+            } else {
+                icon.classList.remove('fa-sun');
+                icon.classList.add('fa-moon');
+            }
+        });
+
+        // Check for saved preference
+        if (localStorage.getItem('darkMode') === 'true') {
+            document.body.classList.add('dark-mode');
+            const icon = darkModeToggle.querySelector('i');
+            icon.classList.remove('fa-moon');
+            icon.classList.add('fa-sun');
+        }
+        
+        // Drag and drop functionality
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            dropArea.addEventListener(eventName, preventDefaults, false);
+        });
+        
+        function preventDefaults(e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+        
+        ['dragenter', 'dragover'].forEach(eventName => {
+            dropArea.addEventListener(eventName, highlight, false);
+        });
+        
+        ['dragleave', 'drop'].forEach(eventName => {
+            dropArea.addEventListener(eventName, unhighlight, false);
+        });
+        
+        function highlight() {
+            dropArea.classList.add('dragover');
+        }
+        
+        function unhighlight() {
+            dropArea.classList.remove('dragover');
+        }
+        
+        dropArea.addEventListener('drop', handleDrop, false);
+        
+        function handleDrop(e) {
+            const dt = e.dataTransfer;
+            const files = dt.files;
+            
+            if (files.length) {
+                fileInput.files = files;
+                handleFiles(files);
+            }
+        }
+        
+        function handleFiles(files) {
+            if (files.length) {
+                const file = files[0];
+                if (file.type !== 'text/plain' && !file.name.endsWith('.txt')) {
+                    showStatus('Please upload a .txt file', 'error');
+                    return;
+                }
+                
+                fileName.textContent = file.name;
+                processBtn.disabled = false;
+                resetUI();
+            }
+        }
         
         // Enable process button only when file is selected
         fileInput.addEventListener('change', () => {
