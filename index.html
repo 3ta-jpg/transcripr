@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Transcript Converter</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+            line-height: 1.6;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            color: #333;
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .container {
+            background-color: #f9f9f9;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        .file-upload {
+            margin-bottom: 20px;
+        }
+        #processBtn {
+            background-color: #4285f4;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        #processBtn:hover {
+            background-color: #3367d6;
+        }
+        #processBtn:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+        }
+        #downloadBtn {
+            background-color: #0f9d58;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            display: none;
+        }
+        #downloadBtn:hover {
+            background-color: #0b8043;
+        }
+        textarea {
+            width: 100%;
+            height: 200px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            resize: vertical;
+            font-family: monospace;
+        }
+        .output-area {
+            margin-top: 20px;
+        }
+        .status {
+            margin-top: 10px;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+    <h1>Transcript Converter</h1>
+    
+    <div class="container">
+        <div class="file-upload">
+            <p>Upload a transcript text file:</p>
+            <input type="file" id="fileInput" accept=".txt">
+        </div>
+        
+        <button id="processBtn" disabled>Process Transcript</button>
+        <a id="downloadBtn" href="#" download="processed_transcript.txt">Download Processed Transcript</a>
+        
+        <div class="status" id="status"></div>
+        
+        <div class="output-area">
+            <p>Preview:</p>
+            <textarea id="outputText" readonly></textarea>
+        </div>
+    </div>
+
+    <script>
+        // Your transcript processing function
+        function process_transcript(transcript_text) {
+            const lines = transcript_text.trim().split('\n');
+            
+            const processed_transcript = [];
+            let current_speaker = null;
+            let current_text = "";
+            
+            let i = 0;
+            while (i < lines.length) {
+                const line = lines[i];
+                
+                // Check if this is a line with speaker information
+                // Format: number "Speaker Name" (numbers)
+                if (line.includes('"') && line.includes('(') && line.includes(')') && !isNaN(line[0])) {
+                    // Extract speaker name
+                    const speaker_name = line.split('"')[1];
+                    
+                    // If we're changing speakers, add previous content
+                    if (current_speaker && current_speaker !== speaker_name && current_text) {
+                        processed_transcript.push(`${current_speaker}: ${current_text.trim()}`);
+                        current_text = "";
+                    }
+                    
+                    current_speaker = speaker_name;
+                    i += 1;
+                    
+                    // Skip timestamp line
+                    if (i < lines.length && lines[i].includes("-->")) {
+                        i += 1;
+                    }
+                    
+                    // Get content line
+                    if (i < lines.length) {
+                        current_text += " " + lines[i];
+                    }
+                } else {
+                    // If this is continuation of content
+                    current_text += " " + line;
+                }
+                
+                i += 1;
+            }
+            
+            // Add the last speaker's content
+            if (current_speaker && current_text) {
+                processed_transcript.push(`${current_speaker}: ${current_text.trim()}`);
+            }
+            
+            return processed_transcript.join('\n\n');
+        }
+
+        // DOM elements
+        const fileInput = document.getElementById('fileInput');
+        const processBtn = document.getElementById('processBtn');
+        const downloadBtn = document.getElementById('downloadBtn');
+        const statusElement = document.getElementById('status');
+        const outputText = document.getElementById('outputText');
+        
+        // Enable process button only when file is selected
+        fileInput.addEventListener('change', () => {
+            processBtn.disabled = !fileInput.files.length;
+            downloadBtn.style.display = 'none';
+            outputText.value = '';
+            statusElement.textContent = '';
+        });
+        
+        // Process the file when button is clicked
+        processBtn.addEventListener('click', () => {
+            const file = fileInput.files[0];
+            if (!file) return;
+            
+            statusElement.textContent = 'Processing...';
+            
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                try {
+                    const content = e.target.result;
+                    const processed = process_transcript(content);
+                    
+                    // Show the processed text in the preview
+                    outputText.value = processed;
+                    
+                    // Create a download link
+                    const blob = new Blob([processed], { type: 'text/plain' });
+                    const url = URL.createObjectURL(blob);
+                    downloadBtn.href = url;
+                    downloadBtn.style.display = 'inline-block';
+                    
+                    statusElement.textContent = 'Transcript processed successfully!';
+                } catch (error) {
+                    statusElement.textContent = `Error processing transcript: ${error.message}`;
+                }
+            };
+            
+            reader.onerror = () => {
+                statusElement.textContent = 'Error reading the file.';
+            };
+            
+            reader.readAsText(file);
+        });
+    </script>
+</body>
+</html>
